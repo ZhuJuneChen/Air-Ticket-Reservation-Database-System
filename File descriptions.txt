@@ -1,0 +1,39 @@
+app.py - Flask and backend support functions
+mysql_utils.py - Functions of queries executed in database
+
+Templates:
+	BarTemplate.html - initial bar template used in login and register page
+	GeneralTemplate.html - template used in all the other pages
+	SearchByFlightNum.html - allow public search; allow booking agent to search flight for customer by flight number
+	SearchByLocation.html - allow public search; allow booking agent to search flight for customer by location
+	
+	Airline Staff
+		LoginStaff.html - login page for airline staff
+		AddAirplane.html - add airplanes
+		AddAirport.html - add airports
+		AddFlight.html - add flights 
+		CompareRevenue.html - show comparisons between direct and indirect sales
+		ManageFlight.html - view flight and its passengers; add new flight
+		RegisterStaff.html - register page
+	 	TicketSales.html - show total amount of tickets sold
+		UpdateStatus.html - change status fr flight
+		ViewCustomersOnBoard.html - show passengers on a particular flight
+		ViewFrequentCustomer.html - show the most frequent customers and flights taken by a particular customer on a particular airline
+		ViewTopBookingAgent.html - show the top five booking agents by ticket sales and commission
+		ViewTopDestination.html - show the top three destinations
+	Customer
+		CustomerTrackSpending.html - show the figure and chart of money spent
+		LoginCustomer.html - login page for customer
+		RegisterCustomer.html - register page
+		ViewCustomerFlight.html - view purchased flight information
+	Booking Agent
+		LoginBookingAgent.html - login page for booking agent
+		RegisterBookingAgent.html - register page
+		ViewCommission.html - show total amount of commission fees
+		ViewFlight.html - view the purchased flight for customers
+		ViewTopCustomer.html - show the top five customers by bar charts
+	Logout.html - logout page
+
+Static:
+	supporting files for html
+
