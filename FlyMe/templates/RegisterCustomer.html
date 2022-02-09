@@ -1,0 +1,188 @@
+{% extends "BarTemplate.html" %}
+
+{% block title %}Register{% endblock %}
+{% block body %}
+    
+<div class="container">
+  <main>
+    <div class="py-5 text-center">
+      <img class="d-block mx-auto mb-4" src="../static/image/icon.svg" alt="" width="72" height="57">
+      <h2>Register</h2>
+    </div>
+    {% if not success %}
+    <div class="btn-group">
+            <a class="btn btn-primary active" aria-current="page">Customer</a >
+            <a class="btn btn-primary"  href="{{ url_for('register_booking_agent') }}">Booking Agent</a >
+            <a class="btn btn-primary"  href="{{ url_for('register_airline_staff') }}">Airline Staff</a >
+    </div>
+    <div class="row g-5">
+      <div class="col-md-5 col-lg-4 order-md-last">
+      </div>
+      <div class="col-md-7 col-lg-8">
+        <form method="post" class="needs-validation" novalidate>
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <label class="form-label">Email</label>
+                <label>
+                    <input name="email" type="text" placeholder="" value="" required>
+                </label>
+                <div class="invalid-feedback">
+                Valid Email is required.
+              </div>
+            </div>
+
+            <div class="col-sm-6">
+              <label class="form-label">Name</label>
+                <label>
+                    <input name="name" type="text" placeholder="" value="" required>
+                </label>
+                <div class="invalid-feedback">
+                Valid name is required.
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Password</label>
+              <div class="input-group has-validation">
+                  <label>
+                      <input name="password" placeholder="Password" type="password" required>
+                  </label>
+                  <div class="invalid-feedback">
+                  Your username is required.
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Building Number</label>
+                <label>
+                    <input name="building_number" type="text" placeholder="" value="" required>
+                </label>
+                <div class="invalid-feedback">
+                Building Number is required.
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">Street</label>
+                <label>
+                    <input name="street" type="text" placeholder="" value="" required>
+                </label>
+                <div class="invalid-feedback">
+                Street is required.
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label class="form-label">City</label>
+                <label>
+                    <input name="city" type="text" placeholder="" value="" required>
+                </label>
+                <div class="invalid-feedback">
+                City is required.
+              </div>
+            </div>
+
+            <div class="col-md-5">
+              <label class="form-label">State</label>
+                <label>
+                    <input name="state" type="text" placeholder="" value="" required>
+                </label>
+                <div class="invalid-feedback">
+                State is required.
+              </div>
+            </div>
+
+            <div class="col-md-4">
+              <label class="form-label">PhoneNumber</label>
+                <label>
+                    <input name="phone_number" type="text" placeholder="" value="" required>
+                </label>
+                <div class="invalid-feedback">
+                Phone number is required.
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Birthday</label>
+                <label>
+                    <input name="date_of_birth" type="text" placeholder="YYYY/MM/DD" required>
+                </label>
+                <div class="invalid-feedback">
+                Birthday is required.
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Passport Number</label>
+                <label>
+                    <input name="passport_number" type="text" placeholder="" value="" required>
+                </label>
+                <div class="invalid-feedback">
+                Passport Number is required.
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Passport Country</label>
+                <label>
+                    <input name="passport_country" type="text" placeholder="" value="" required>
+                </label>
+                <div class="invalid-feedback">
+                Passport Country is required.
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="form-label">Passport Expiration</label>
+              <div class="ui calendar">
+                  <div class="ui left icon input">
+                      <label>
+                          <input name="passport_expiration" placeholder="YYYY/MM/DD" type="text" value="" required>
+                      </label>
+                  </div>
+              </div>
+              <div class="invalid-feedback">
+                Passport Country is required.
+              </div>
+            </div>
+
+
+          <hr class="my-4">
+
+          <button class="w-100 btn btn-primary btn-lg" type="submit">Register</button>
+        </form>
+      </div>
+    </div>
+  </main>
+{% endif %}
+        <div class="ui {% if not error %}hidden {% endif %}error message">
+            {% if error is defined and error is not string %}
+                <div class="header">{{ error[0] }}</div>
+                <ul class="list">
+                    {% for item in error[1:] %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="list">
+                    <li>{{ error }}</li>
+                </ul>
+            {% endif %}
+        </div>
+        <div class="ui {% if not success %}hidden {% endif %}success message">
+            <div class="header">Registration Succeeded</div>
+            Now you can log in to your account.<a href="{{ url_for('login_customer') }}"><u>Login</u></a>
+        </div>
+        <div class="ui {% if success %}hidden {% endif %}blue message">
+            <i class="bi bi-cursor"></i>
+            Already have an account?
+            <a href="{{ url_for('login_customer') }}"><u>Login</u></a>
+        </div>
+</div>
+
+
+    <script src="../static/js/bootstrap.bundle.min.js"></script>
+
+      <script src="../static/js/form-validation.js"></script>
+  {% endblock %}

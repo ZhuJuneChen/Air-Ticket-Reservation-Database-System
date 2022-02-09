@@ -1,0 +1,45 @@
+{% extends "GeneralTemplate.html" %}
+{% block title %}Update Status{% endblock %}
+{% block body %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="ui container" style="padding-top: 8em;padding-bottom: 5%;">
+        <h2 class="ui header">
+            <i class="bi bi-flag"></i>
+            <div class="content">
+                Update Status
+            </div>
+        </h2>
+        <div class="ui {% if not success %}hidden {% endif %}success message">
+            <div class="header">Operation Succeeded</div>
+            {{ success }}
+        </div>
+        <div class="ui {% if not error %}hidden {% endif %}error message">
+            {% if error is defined and error is not string %}
+                <div class="header">{{ error[0] }}</div>
+                <ul class="list">
+                    {% for item in error[1:] %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="list">
+                    <li>{{ error }}</li>
+                </ul>
+            {% endif %}
+        </div>
+        {% if success %}
+            <button class="btn btn-primary"
+                    onclick="window.location.href='{{ url_for('view_flight_airline_staff') }}';">
+                Back
+            </button>
+        {% else %}
+            <button class="btn btn-primary"
+                    onclick="history.go(-1);">
+                Back
+            </button>
+        {% endif %}
+        <div style="clear: both;"></div>
+
+    </div>
+</main>
+{% endblock %}

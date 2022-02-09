@@ -1,0 +1,84 @@
+{% extends "GeneralTemplate.html" %}
+{% block title %}Customer Flight History{% endblock %}
+{% block body %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="ui container" style="padding-top: 8em;padding-bottom: 5%;">
+        <h2 class="ui header">
+            <i class="bi bi-clock-history"></i>
+            <div class="content">
+                Customer Flight History
+            </div>
+        </h2>
+        <div class="ui segment">
+            <form class="ui large form" method="post">
+                <div class="field">
+                    <label>Customer Email</label>
+                    <div class="ui search">
+                            <span class="bi bi-envelope"></span>
+                            <input name="customer_email" class="prompt" placeholder="Type to search..." type="text"
+                                   required>
+                        <div class="results"></div>
+                    </div>
+                </div>
+                <button class="btn btn-primary" type="submit" style="float: right;">
+                    Search
+                </button>
+                <div style="clear: both"></div>
+            </form>
+        </div>
+        {% if data %}
+            <div class="ui segment">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        {% for col in head %}
+                            <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in data %}
+                        <tr>
+                            {% for col in row %}
+                                <td>{{ col }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        <div class="ui {% if not error %}hidden {% endif %}error message">
+            {% if error is defined and error is not string %}
+                <div class="header">{{ error[0] }}</div>
+                <ul class="list">
+                    {% for item in error[1:] %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="list">
+                    <li>{{ error }}</li>
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}
+{% block script %}
+    <script>
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('POST', '{{ url_for('get_all_customer_emails') }}', true);
+        httpRequest.send();
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                var response = JSON.parse(httpRequest.responseText);
+                var content = [];
+                for (var i = 0; i < response.length; i++) {
+                    content.push({'title': response[i]});
+                }
+                $('.ui.search').search({source: content});
+            }
+        };
+    </script>
+{% endblock %}

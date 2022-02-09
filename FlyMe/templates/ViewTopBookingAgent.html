@@ -1,0 +1,114 @@
+{% extends "GeneralTemplate.html" %}
+{% block title %}Top Booking Agents{% endblock %}
+{% block body %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="ui container" style="padding-top: 8em;padding-bottom: 5%;">
+        <h2 class="ui header">
+            <i class="bi bi-person"></i>
+            <div class="content">
+                Top Booking Agents
+            </div>
+        </h2>
+        {% if yc and ytm and yty %}
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="three column row">
+                        <div class="column">
+                            <h2 class="ui header">
+                                <i class="bi bi-credit-card-2-front"></i>
+                                <div class="content">
+                                    Sort By Ticket Amount Last Month
+                                </div>
+                            </h2>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    {% for col in xtm %}
+                                        <th>{{ col }}</th>
+                                    {% endfor %}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for row in ytm %}
+                                    <tr>
+                                        {% for col in row %}
+                                            <td>{{ col }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="column">
+                            <h2 class="ui header">
+                                <i class="bi bi-credit-card-2-front"></i>
+                                <div class="content">
+                                    Sort By Ticket Amount Last Year
+                                </div>
+                            </h2>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    {% for col in xty %}
+                                        <th>{{ col }}</th>
+                                    {% endfor %}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for row in yty %}
+                                    <tr>
+                                        {% for col in row %}
+                                            <td>{{ col }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="column">
+                            <h2 class="ui header">
+                                <i class="bi bi-credit-card"></i>
+                                <div class="content">
+                                    Sort By Commission Last Year
+                                </div>
+                            </h2>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    {% for col in xc %}
+                                        <th>{{ col }}</th>
+                                    {% endfor %}
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for row in yc %}
+                                    <tr>
+                                        {% for col in row %}
+                                            <td>{{ col }}</td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="ui {% if not error %}hidden {% endif %}error message">
+            {% if error is defined and error is not string %}
+                <div class="header">{{ error[0] }}</div>
+                <ul class="list">
+                    {% for item in error[1:] %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="list">
+                    <li>{{ error }}</li>
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}

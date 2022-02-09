@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="../static/image/icon.png" type="png"/>
+    <link type="text/css" rel="stylesheet" href="/static/css/semantic.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/bootstrap-icons.css">
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <script src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/semantic.min.js"></script>
+    {% block head %}{% endblock %}
+    <meta charset="UTF-8">
+    <title>{% block title %}{% endblock %} - FlyMe</title>
+</head>
+
+<body>
+
+<header class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+  <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3" href="{{ url_for('home') }}">FlyMe</a>
+  <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  {% if not session.get('isLogin') %}
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="{{ url_for('login_customer') }}">Login</a>
+            <a class="nav-link" href="{{ url_for('register_customer') }}">Register</a>
+        </li>
+    </ul>
+  {% elif session.get('isLogin' )%}
+    <ul class="navbar-nav px-3">
+        <li class="nav-item text-nowrap">
+            <a class="nav-link" href="{{ url_for('logout') }}">Sign out</a>
+        </li>
+  </ul>
+  {% endif %}
+</header>
+
+<div class="container-fluid" style="padding-left:15em;padding-top: 6em;padding-bottom: 5%;">
+  <div class="row">
+    {% if not session.get('isLogin') %}
+    {% elif session.get('isLogin') and session.get('type')=='customer' %}
+        <nav id="sidebarMenu" class="col-md-1 col-lg-2 d-md-block bg-light sidebar collapse">
+          <div class="position-sticky pt-3">
+            <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Account Type: Customer</span>
+            </h5>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('search_flight_by_location') }}">
+                  <span class="bi bi-cart3"></span>
+                  <h5>Search/Purchase</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_my_flight') }}">
+                  <span class="bi bi-calendar"></span>
+                    <h5>My Flight</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('track_my_spending') }}">
+                  <span class="bi bi-briefcase"></span>
+                    <h5>My Spending</h5>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+    {% elif session.get('isLogin') and session.get('type')=='booking_agent' %}
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+          <div class="position-sticky pt-3">
+            <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Account Type: Booking Agent</span>
+            </h5>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('search_flight_by_location') }}">
+                  <span class="bi bi-cart3"></span>
+                  <h5>Search/Purchase</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_my_flight') }}">
+                  <span class="bi bi-calendar"></span>
+                    <h5>My Flight</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_my_commission') }}">
+                  <span class="bi bi-briefcase"></span>
+                    <h5>My Commission</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_top_customers') }}">
+                  <span class="bi bi-people"></span>
+                    <h5>Top Customers</h5>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+    {% elif session.get('isLogin') and session.get('type')=='airline_staff' %}
+        <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+          <div class="position-sticky pt-3">
+            <h5 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Account Type: Airline Staff</span>
+            </h5>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_flight_airline_staff') }}">
+                  <span class="bi bi-shield-lock"></span>
+                    <h5>Manage Flight</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('add_airplane') }}">
+                  <span class="bi bi-shield-plus"></span>
+                    <h5>Add Airplane</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('add_airport') }}">
+                  <span class="bi bi-plus-circle"></span>
+                    <h5>Add Airport</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_top_destinations') }}">
+                  <span class="bi bi-globe"></span>
+                    <h5>Top Destinations</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_top_booking_agents') }}">
+                  <span class="bi bi-person"></span>
+                    <h5>Top Booking Agents</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_frequent_customer') }}">
+                  <span class="bi bi-people"></span>
+                    <h5>Frequent Customers</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_customer_flight_history') }}">
+                  <span class="bi bi-bar-chart-steps"></span>
+                  <h5>Customer's Flights</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('view_report') }}">
+                  <span class="bi bi-clipboard-data"></span>
+                    <h5>Ticket Sales Report</h5>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('compare_revenue') }}">
+                  <span class="bi bi-eyeglasses"></span>
+                    <h5>Revenue Analysis</h5>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+
+    {% endif %}
+  </div>
+
+<div style="height: 100%;">
+    {% block body %}{% endblock %}
+</div>
+</body>
+{% block script %}{% endblock %}
+</html>

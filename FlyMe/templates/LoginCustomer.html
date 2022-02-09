@@ -1,0 +1,51 @@
+{% extends "BarTemplate.html" %}
+
+{% block title %}Login{% endblock %}
+{% block body %}
+    <div class="ui container" style="padding-top: 12em;padding-bottom: 5%;width: 60ch;">
+        <h2 class="ui header" style>
+            <div class="content">
+                Login
+            </div>
+        </h2>
+        <div class="btn-group">
+            <a href=" " class="btn btn-primary active" aria-current="page">Customer</a >
+            <a href="{{ url_for('login_booking_agent') }}" class="btn btn-primary">Booking Agent</a >
+            <a href="{{ url_for('login_airline_staff') }}" class="btn btn-primary">Airline Staff</a >
+        </div>
+        <form method="post">
+            <div class="mb-3">
+                <label class="form-label">Email address</label>
+                <input name="email" type="text">
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input name="password" type="password">
+            </div>
+            <button type="submit" class="btn btn-primary">Login</button>
+        </form>
+
+
+        <div class="ui {% if not error %}hidden {% endif %}error message">
+            {% if error is defined and error is not string %}
+                <div class="header">{{ error[0] }}</div>
+                <ul class="list">
+                    {% for item in error[1:] %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="list">
+                    <li>{{ error }}</li>
+                </ul>
+            {% endif %}
+        </div>
+        <div class="text-primary">
+            <a href="{{ url_for('register_customer') }}"><u>Register</u></a>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script src="/static/js/formVldt.js"></script>
+    <script src="/static/js/loginE.js"></script>
+{% endblock %}

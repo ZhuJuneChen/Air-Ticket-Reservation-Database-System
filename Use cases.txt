@@ -1,0 +1,390 @@
+Note: the input of execute function is from the user input.
+
+Customer:
+1. login_customer:
+cursor.execute("select count(distinct email) as number from customer where email = %s and password = %s"(email, password))
+cursor.execute("select name from customer where email = %s", (email,))
+Examine whether the email address exists in the database. If exists, then allow login.
+
+2. register_customer:
+cursor.execute("insert into `customer` values(%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)", (email, name, password, building_number, street, city, state, phone_number, passport_number, passport_expiration, passport_country, date_of_birth))
+Insert the customer information into customer table.
+
+3. track_my_spending:
+if not start_date and not end_date:
+	cursor.execute("select sum(price) as total_spending from flight natural join ticket natural join purchases where customer_email = %s and purchase_date > date_sub(current_date, interval 6 month)",(email,))
+elif not start_date and end_date:
+	cursor.execute("select sum(price) as total_spending from flight natural join ticket natural join purchases where customer_email = %s and purchase_date <= %s",(email, end_date))
+elif start_date and not end_date:
+	cursor.execute("select sum(price) as total_spending from flight natural join ticket natural join purchases where customer_email = %s and purchase_date >= %s",(email, start_date))
+elif start_date and end_date:
+	cursor.execute("select sum(price) as total spending from flight natural join ticket natural join purchases where customer_email = %s and purchase_date between %s and %s",(email, start_date, end_date))
+Select total spending.
+
+if not start_date and not end_date:
+	cursor.execute("select extract(year_month from purchase_date) as month, sum(price) as monthly_spending from flight natural join ticket natural join purchases where customer_email = %s and purchase_date >= date_sub(current_date, interval 6 month) group by month",(email,))
+elif not start_date and end_date:
+	cursor.execute("select extract(year_month from purchase_date) as month, sum(price) as monthly_spending from flight natural join ticket natural join purchases where customer_email = %s and purchase_date <= %s group by month",(email, end_date))
+elif start_date and not end_date:
+	cursor.execute("select extract(year_month from purchase_date) as month, sum(price) as monthly_spending from flight natural join ticket natural join purchases where customer_email = %s and purchase_date >= %s group by month",(email, start_date))
+elif start_date and end_date:
+	cursor.execute("select extract(year_month from purchase_date) as month, sum(price) as monthly_spending from flight natural join ticket natural join purchases where customer_email = %s and purchase_date between %s and %s group by month", (email, start_date, end_date))
+Select monthly spending.
+
+4. view_my_flight_customer:
+if not location and not start_date and not end_date:
+	cursor.execute("select * from flight where status = 'upcoming' and (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s)",(email,))
+elif location and not start_date and not end_date:
+	if location in cities:
+		cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s))",(email, location, location))
+        else:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and (departure_airport = %s or arrival_airport = %s)", (email, location, location))
+elif not location and start_date and not end_date:
+	cursor.execute("select * FROM flight WHERE (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and departure_time >= %s",(email, start_date))
+elif not location and not start_date and end_date:
+            cursor.execute("select * FROM flight WHERE (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and arrival_time <= date_add(%s, interval 1 day)",(email, end_date))
+elif location and start_date and not end_date:
+	if location in cities:
+		cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s)) and departure_time >= %s",(email, location, location, start_date))
+        else:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and (departure_airport = %s or arrival_airport = %s) and departure_time >= %s", (email, location, location, start_date))
+elif location and not start_date and end_date:
+        if location in cities:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s)) and arrival_time <= date_add(%s, interval 1 day)",(email, location, location, end_date))
+        else:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and (departure_airport = %s or arrival_airport = %s) and arrival_time <= date_add(%s, interval 1 day)",(email, location, location, end_date))
+elif not location and start_date and end_date:
+	cursor.execute( "select * FROM flight WHERE (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and %s <= departure_time and arrival_time <= date_add(%s, interval 1 day) ",(email, start_date, end_date))
+elif location and start_date and end_date:
+        if location in cities:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s)) and departure_time >= %s and arrival_time <= date_add(%s, interval 1 day)",(email, location, location, start_date, end_date))
+        else:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases where customer_email = %s) and (departure_airport = %s or arrival_airport = %s) and departure_time >= %s and arrival_time <= date_add(%s, interval 1 day)",(email, location, location, start_date, end_date))
+Select flight information based on different cases.
+
+Booking Agent:
+1. Login
+cursor.execute("select count(distinct email) as number from booking_agent where email = %s and password = %s",(email, password))
+Check if the booking agent exists in the email.
+
+2.Register 
+cursor.execute("insert into airline_staff values(%s,%s,%s,%s,%s,%s)",(username, password, first_name, last_name, date_of_birth, airline_name))
+Take the input values to insert into the table in the database.
+
+3.Search Flight by location
+command = "select * from flight where status = 'upcoming' and %s between date_sub(departure_time, INTERVAL 1 DAY) and arrival_time "
+if source in _all_cities(cnx):
+	command += "and departure_airport in (select airport_name from airport where airport_city = %s) "
+else:
+	command += "and departure_airport = %s "
+if destination in _all_cities(cnx):
+        command += "and arrival_airport in (select airport_name from airport where airport_city = %s)"
+else:
+        command += "and arrival_airport = %s"
+cursor.execute(command, (date, source, destination))
+Search flight by location based on different search cases.
+
+4. Search Flight by Flight Number
+cursor.execute("select * from flight where flight_num = %s and %s between date_sub(departure_time, interval 1 day) and arrival_time",(flight_num, date))
+Search flight by with flight number and date specified.
+
+5. Purchase ticket
+cursor.execute("select seats from flight natural join airplane where airline_name = %s and flight_num = %s",(airline, flight_number))
+Check the capacity of the airplane.
+cursor.execute("select count(ticket_id) as count from ticket where airline_name = %s and flight_num = %s",(airline, flight_number))
+Calculate the number of seats that are already taken on that airplane.
+cursor.execute("select max(ticket_id) as max from ticket")
+Select the latest ticket_id to update.
+cursor.execute("insert into ticket values (%s,%s,%s)", (ticket_id, airline, flight_number))
+Generate the ticket.
+cursor.execute("insert into purchases values(%s,%s, null, current_date)", (ticket_id, customer_email))
+If there is no booking agent, insert the value into table "purchases".
+cursor.execute("select booking_agent_id from booking_agent where email = %s", (booking_agent_email,))
+cursor.execute("insert into purchases values(%s,%s,%s, current_date)",(ticket_id, customer_email, booking_agent_id))
+If there is a booking agent, insert the value into table "purchases".
+
+
+6. View flight
+if not location and not start_date and not end_date:
+	cursor.execute("SELECT * FROM flight WHERE status = 'upcoming' and (flight_num, airline_name) in (select flight_num, airline_name from ticket natural 	join purchases natural join booking_agent where email = %s)",(email,))
+elif location and not start_date and not end_date:
+	if location in cities:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and (departure_airport in (select all airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s))",(email, location, location))
+	else:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and (departure_airport = %s or arrival_airport = %s)",(email, location, location))
+elif not location and start_date and not end_date:
+	cursor.execute("SELECT * FROM flight WHERE (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and departure_time >= %s",(email, start_date))
+elif not location and not start_date and end_date:
+	cursor.execute("SELECT * FROM flight WHERE (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and arrival_time <= date_add(%s, interval 1 day)",(email, end_date))
+elif location and start_date and not end_date:
+	if location in cities:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s)) and departure_time >= %s",(email, location, location,start_date))
+        else:
+		cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and (departure_airport = %s or arrival_airport = %s) and departure_time >= %s",(email, location, location, start_date))
+elif location and not start_date and end_date:
+            if location in cities:
+		cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s)) and arrival_time <= date_add(%s, interval 1 day)",(email, location, location, end_date))
+            else:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and (departure_airport = %s or arrival_airport = %s) and arrival_time <= date_add(%s, interval 1 day)",(email, location, location, end_date))
+elif not location and start_date and end_date:
+	cursor.execute("SELECT * FROM flight WHERE (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and %s <= departure_time and arrival_time <= date_add(%s, interval 1 day) ",(email, start_date, end_date))
+elif location and start_date and end_date:
+	if location in cities:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s)) and departure_time >= %s and arrival_time <= date_add(%s, interval 1 day)",(email, location, location, start_date, end_date))
+	else:
+                cursor.execute("select * from flight where (flight_num, airline_name) in (select flight_num, airline_name from ticket natural join purchases natural join booking_agent where email = %s) and (departure_airport = %s or arrival_airport = %s) and departure_time >= %s and arrival_time <= date_add(%s, interval 1 day)", (email, location, location, start_date, end_date))
+
+View flights based on different search cases.
+
+7. View commission
+if not start_date and not end_date:
+	cursor.execute("select sum(price)/10 as total_commission from flight natural join ticket natural join purchases where booking_agent_id in (select booking_agent_id from booking_agent where email = %s)",(email,))
+elif start_date and not end_date:
+	cursor.execute("select sum(price)/10 as total_commission from flight natural join ticket natural join purchases where booking_agent_id in (select booking_agent_id from booking_agent where email = %s) and purchase_date >= %s",(email, start_date))
+elif not start_date and end_date:
+	cursor.execute("select sum(price)/10 as total_commission from flight natural join ticket natural join purchases where booking_agent_id in (select booking_agent_id from booking_agent where email = %s) and purchase_date <= %s",(email, end_date))
+elif start_date and end_date:
+	cursor.execute("select sum(price)/10 as total_commission from flight natural join ticket natural join purchases where booking_agent_id in (select booking_agent_id from booking_agent where email = %s) and purchase_date between %s and %s",(email, start_date, end_date))
+
+View commission based on different input cases of start date and end date.
+
+8. View top customers
+
+cursor.execute("select customer_email, count(distinct ticket_id) as number_of_ticket from purchases where booking_agent_id in (select booking_agent_id from booking_agent where email = %s) and purchase_date between date_sub(CURRENT_DATE, interval 6 month) and CURRENT_DATE group by customer_email order by number_of_ticket DESC", (email,))
+order the customer email by their number of tickets purchased in descendant order and select the first one later.
+
+cursor.execute("select customer_email, sum(price)/10 as commission from purchases natural join ticket natural join flight where booking_agent_id in (select booking_agent_id from booking_agent where email = %s) and purchase_date between date_sub(CURRENT_DATE, interval 6 month) and CURRENT_DATE group by customer_email order by commission DESC", (email,))
+
+order the customer email by commission in descendant order and select the first one later.
+
+
+Airline Staff:
+
+1. login
+
+cursor.execute("select count(distinct username) as number, CONCAT(first_name,' ',last_name) AS `name` from airline_staff where username = %s and password = %s",(username, password))
+
+check if the airline staff is in the database.
+
+2. register
+
+cursor.execute("insert into airline_staff values(%s,%s,%s,%s,%s,%s)",(username, password, first_name, last_name, date_of_birth, airline_name))
+
+insert the input values to the database as a new airline staff.
+
+3. search flight 
+
+command = "select * from flight where status = 'upcoming' and %s between date_sub(departure_time, INTERVAL 1 DAY) and arrival_time "
+if source in _all_cities(cnx):
+	command += "and departure_airport in (select airport_name from airport where airport_city = %s) "
+else:
+	command += "and departure_airport = %s "
+if destination in _all_cities(cnx):
+        command += "and arrival_airport in (select airport_name from airport where airport_city = %s)"
+else:
+        command += "and arrival_airport = %s"
+cursor.execute(command, (date, source, destination))
+
+Search flight by location based on different search cases.
+
+
+cursor.execute("select * from flight where flight_num = %s and %s between date_sub(departure_time, interval 1 day) and arrival_time",(flight_num, date))
+
+Search flight by with flight number and date specified.
+
+4. view flight
+
+cursor.execute("select airline_name from airline_staff where username = %s", (username,))
+
+Select the airline where the staff works.
+
+
+if not location and not start_date and not end_date:
+	cursor.execute("SELECT * FROM flight WHERE status = 'upcoming' and airline_name = %s", (airline_name,))
+elif location and not start_date and not end_date:
+	if location in cities:
+		cursor.execute("select * from flight where airline_name = %s and (departure_airport in (select all airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s))",(airline_name, location, location))
+	else:
+		cursor.execute("select * from flight where airline_name = %s and (departure_airport = %s or arrival_airport = %s)",(airline_name, location, location))
+elif not location and start_date and not end_date:
+	cursor.execute("SELECT * FROM flight WHERE airline_name = %s and departure_time >= %s",(airline_name, start_date))
+elif not location and not start_date and end_date:
+	cursor.execute("SELECT * FROM flight WHERE airline_name = %s and arrival_time <= %s",(airline_name, end_date))
+elif location and start_date and not end_date:
+	if location in cities:
+		cursor.execute("select * from flight where airline_name = %s and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s)) and departure_time >= %s",airline_name, location, location, start_date))
+	else:
+                cursor.execute("select * from flight where airline_name = %s and (departure_airport = %s or arrival_airport = %s) and departure_time >= %s", (airline_name, location, location, start_date))
+elif location and not start_date and end_date:
+	if location in cities:
+		cursor.execute("select * from flight where airline_name = %s and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s)) and arrival_time <= %s",(airline_name, location, location, end_date))
+	else:
+                cursor.execute("select * from flight where airline_name = %s and (departure_airport = %s or arrival_airport = %s) and arrival_time <= %s", (airline_name, location, location, end_date))
+elif not location and start_date and end_date:
+	cursor.execute("select * from flight where airline_name = %s and %s <= departure_time and arrival_time <= %s ",(airline_name, start_date, end_date))
+elif location and start_date and end_date:
+	if location in cities:
+                cursor.execute("select * from flight where airline_name = %s and (departure_airport in (select airport_name from airport where airport_city = %s) or arrival_airport in (select airport_name from airport where airport_city = %s)) and departure_time >= %s and arrival_time <= %s", (airline_name, location, location, start_date, end_date))
+	else:
+                cursor.execute("select * from flight where airline_name = %s and (departure_airport = %s or arrival_airport = %s) and departure_time >= %s and arrival_time <= %s",(airline_name, location, location, start_date, end_date))
+
+View flight based on different search cases.
+
+5. view passengers
+
+cursor.execute("select airline_name from airline_staff where username = %s", (username,))
+
+Select the airline where the staff works.
+
+
+cursor.execute("select customer_email from purchases natural join ticket where flight_num = %s and airline_name = %s",(flight_num, airline_name))
+
+Select all the customer emails with the flight specified.
+
+6. Change the status of flights
+
+cursor.execute("select airline_name from airline_staff where username = %s", (username,))
+
+Select the airline where the staff works.
+
+
+cursor.execute("update flight set status = %s where airline_name = %s and flight_num = %s",(new_status, airline_name, flight_num))
+
+Update the status with the flight specified.
+
+7. Add flight
+
+cursor.execute("select airline_name from airline_staff where username = %s", (username,))
+
+Select the airline where the staff works.
+
+
+cursor.execute("insert into flight values (%s,%s,%s,%s,%s,%s,%s,%s,%s)", (staff_airline, flight_num, departure_airport, departure_time, arrival_airport, arrival_time, price, status, airplane_id))
+
+Insert the information of the new flight into the table.
+
+8. view and add airplane 
+
+cursor.execute("select airplane_id, seats from airplane where airline_name in (select airline_name from airline_staff where username = %s)",(airline_staff_username,))
+
+View all the airplanes of the airline company.
+
+cursor.execute("select airline_name from airline_staff where username = %s", (airline_staff_username,))
+cursor.execute("insert into airplane values (%s,%s,%s)", (staff_airline, airplane_id, seats))
+
+Add the airplane to the table.
+
+8. view and add airport
+
+cursor.execute("select * from airport")
+
+View all the airports.
+
+
+cursor.execute("insert into airport values (%s,%s)", (airport_name, airport_city))
+
+Add new airport to the table.
+
+9. view top booking agents
+
+cursor.execute("select airline_name from airline_staff where username = %s", (username,))
+
+Select the airline where the staff works.
+
+
+cursor.execute("select email, count(ticket_id) as ticket from booking_agent natural join purchases natural join ticket natural join flight where purchase_date >= date_sub(CURRENT_DATE, interval 1 year) and airline_name = %s group by email order by ticket DESC",(staff_airline,))
+
+Select top booking agents based on their number of tickets purchased within 1 year.
+
+cursor.execute("select email, count(ticket_id) as ticket from booking_agent natural join purchases natural join ticket natural join flight where purchase_date >= date_sub(CURRENT_DATE, interval 1 month) and airline_name = %s group by email order by ticket DESC",(staff_airline,))
+
+Select top booking agents based on their number of tickets purchased within 1 month.
+
+
+cursor.execute("select email, sum(price)/10 as commission from booking_agent natural join purchases natural join ticket natural join flight where purchase_date >= date_sub(CURRENT_DATE, interval 1 year) and airline_name = %s group by email AND booking_agent_id order by commission DESC",(staff_airline,))
+
+Select top booking agents based on their commission within 1 year.
+
+10. View frequent customers
+
+cursor.execute("select airline_name from airline_staff where username = %s", (username,))
+
+Select the airline where the staff works.
+
+
+cursor.execute("select email from customer where (select count(distinct ticket_id) from purchases natural join ticket natural join flight where customer_email = email and airline_name = %s) >= all (select count(distinct ticket_id) from purchases natural join ticket natural join flight where airline_name = %s group by customer_email)",(staff_airline, staff_airline))
+
+select the customer that has purchased the most number of tickets.
+
+11. View the customer's flights
+
+cursor.execute("select airline_name from airline_staff where username = %s", (username,))
+
+Select the airline where the staff works.
+
+
+cursor.execute("select airline_name, flight_num from flight natural join ticket natural join purchases where customer_email = %s and airline_name = %s",(customer_email, staff_airline))
+
+View all the flights purchased by the customer.
+
+12. View ticket sales reports
+
+cursor.execute("select airline_name from airline_staff where username = %s", (username,))
+
+Select the airline where the staff works.
+
+
+if not start_date and not end_date:
+	cursor.execute("select extract(year_month from purchase_date) as month, count(distinct ticket_id, customer_email) as num_of_ticket from purchases natural join ticket natural join flight where airline_name = %s group by month",(staff_airline,))
+elif start_date and not end_date:
+	cursor.execute("select extract(year_month from purchase_date) as month, count(distinct ticket_id, customer_email) as num_of_ticket from purchases natural join ticket natural join flight where purchase_date >= %s and airline_name = %s group by month",(start_date, staff_airline))
+elif not start_date and end_date:
+	cursor.execute("select extract(year_month from purchase_date) as month, count(distinct ticket_id, customer_email) as num_of_ticket from purchases natural join ticket natural join flight where purchase_date <= %s and airline_name = %s group by month",(end_date, staff_airline))
+elif start_date and end_date:
+	cursor.execute("select extract(year_month from purchase_date) as month, count(distinct ticket_id, customer_email) as num_of_ticket from purchases natural join ticket natural join flight where purchase_date between %s and %s and airline_name = %s group by month",(start_date, end_date, staff_airline))
+
+View number of ticket sales based on different search cases.
+
+
+cursor.execute("select count(ticket_id) as total from purchases natural join ticket natural join flight where airline_name = %s and purchase_date >= date_sub(current_date, interval 1 month)",(staff_airline,))
+cursor.execute("select count(ticket_id) as total from purchases natural join ticket natural join flight where airline_name = %s and purchase_date >= date_sub(current_date, interval 1 year)",(staff_airline,))
+
+View total tickets sold in last month and last year.
+
+13. view_top_destinations
+cursor.execute("select airline_name from airline_staff where username = %s", (airline_staff_username,))
+cursor.execute("select distinct airport_city from airport A order by (select count(ticket_id) from purchases natural join ticket natural join flight where airline_name = %s and purchase_date > date_sub(current_date, interval 3 month) and arrival_airport in (select airport_name from airport where airport_city = A.airport_city))",(staff_airline,))
+cursor.execute( "select distinct airport_city from airport A order by (select count(ticket_id) from purchases natural join ticket natural join flight where airline_name = %s and purchase_date > date_sub(current_date, interval 1 year) and arrival_airport in (select airport_name from airport where airport_city = A.airport_city))",(staff_airline,))
+Select airline first, and then select top 3 airport cities.
+
+
+14. compare_revenue
+cursor.execute("select airline_name from airline_staff where username = %s", (airline_staff_username,))
+cursor.execute("select sum(price) as total_revenue from purchases natural join ticket natural join flight where airline_name = %s and purchase_date >= date_sub(current_date, interval 1 month) and booking_agent_id is null", (staff_airline,))
+cursor.execute("select sum(price) as total_revenue from purchases natural join ticket natural join flight where airline_name = %s and purchase_date >= date_sub(current_date, interval 1 month) and booking_agent_id is not null",(staff_airline,))
+cursor.execute("select sum(price) as total_revenue from purchases natural join ticket natural join flight where airline_name = %s and purchase_date >= date_sub(current_date, interval 1 year) and booking_agent_id is null", (staff_airline,))
+cursor.execute("select sum(price) as total_revenue from purchases natural join ticket natural join flight where airline_name = %s and purchase_date >= date_sub(current_date, interval 1 year) and booking_agent_id is not null", (staff_airline,))
+Select and add up the price of the tickets.
+
+
+Additional SQL Functions:
+1. get_all_airlines
+cursor.execute("select distinct airline_name from airline")
+Select all distinct airline names from airline table.
+
+2. get_all_cities_and_airports
+cursor.execute("select distinct airport_name from airport")
+cursor.execute("select distinct airport_city from airport")
+Select all distinct airports and airport cities.
+
+3. get_all_customer_emails
+cursor.execute("select distinct email from customer")
+Select all distinct customer emails.
+
+4. get_all_airports
+cursor.execute("select distinct airport_name from airport")
+Select all distinct airports.
+
+5. get_all_airplane_id
+cursor.execute("select distinct airplane_id from airplane")
+Select distinct airplane ids.

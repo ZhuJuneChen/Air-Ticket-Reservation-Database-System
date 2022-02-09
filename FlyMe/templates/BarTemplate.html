@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+
+    <link rel="canonical" href="https://getbootstrap.com/docs/5.0/examples/headers/">
+    <link type="text/css" rel="stylesheet" href="/static/css/semantic.min.css">
+    <script src="/static/js/semantic.min.js"></script>
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/css/bootstrap-icons.css" rel="stylesheet">
+
+    <link href="../static/css/headers.css" rel="stylesheet">
+    {% block head %}{% endblock %}
+    <title>{% block title %}{% endblock %} - FlyMe</title>
+  </head>
+
+  <body>
+
+    <div class="container">
+        <header class="d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <a href=" " class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-dark text-decoration-none">
+                <img src="../static/image/icon.svg" alt="" width="30" height="24" class="d-inline-block align-text-top">
+                <span class="fs-4">FlyMe</span>
+            </a >
+
+        <ul class="nav nav-pills">
+            <li class="nav-item"><a href="{{ url_for('home') }}" class="nav-link active">Home</a ></li>
+        </ul>
+        </header>
+    </div>
+
+  {% block body %}{% endblock %}
+  </body>
+</html>

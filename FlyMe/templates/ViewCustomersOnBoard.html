@@ -1,0 +1,69 @@
+{% extends "GeneralTemplate.html" %}
+    {% block title %}View Passengers{% endblock %}
+{% block body %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="ui container" style="padding-top: 8em;padding-bottom: 5%;">
+        <h2 class="ui header">
+            <i class="bi bi-people"></i>
+            <div class="content">
+                Passengers - {{ airline_name }} - {{ flight_num }}
+            </div>
+        </h2>
+        {% if data %}
+            <div class="ui segment">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Passenger Email</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for item in data %}
+                        <tr>
+                            <td>{{ item }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+        <div class="ui {% if not error %}hidden {% endif %}error message">
+            {% if error is defined and error is not string %}
+                <div class="header">{{ error[0] }}</div>
+                <ul class="list">
+                    {% for item in error[1:] %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="list">
+                    <li>{{ error }}</li>
+                </ul>
+            {% endif %}
+        </div>
+        <button class="ui primary right floated button" onclick="history.go(-1);">
+            Back
+        </button>
+        <div style="clear: both;"></div>
+
+    </div>
+</main>
+{% endblock %}
+{% block script %}
+    <script src="../static/js/calDo.js"></script>
+    <script>
+        var content = [];
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('POST', '{{ url_for('get_all_cities_and_airports') }}', true);
+        httpRequest.send();
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                var response = JSON.parse(httpRequest.responseText);
+                for (var i = 0; i < response.length; i++) {
+                    content.push({'title': response[i]});
+                }
+                $('.ui.search').search({source: content});
+            }
+        };
+    </script>
+{% endblock %}

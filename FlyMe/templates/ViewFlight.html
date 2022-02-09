@@ -1,0 +1,121 @@
+{% extends "GeneralTemplate.html" %}
+{% block head %}
+    <link href="../static/css/calendar.min.css" rel="stylesheet"/>
+    <script src="../static/js/calendar.min.js"></script>
+{% endblock %}
+{% block title %}View Flight{% endblock %}
+{% block body %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="ui container" style="padding-top: 8em;padding-bottom: 5%;">
+        <h2 class="ui header">
+            <i class="bi bi-calendar-check"></i>
+            <div class="content">
+                My Flight
+            </div>
+        </h2>
+    <div class="ui segment">
+        <form class="ui large form" method="post">
+            <div class="three fields">
+                <div class="six wide field">
+                    <label>Source/Destination</label>
+                    <div class="ui search">
+                        <span class="bi bi-geo-alt"></span>
+                        <input name="location" class="prompt" placeholder="City or Airport..." type="text">
+                        <div class="results"></div>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>Start Date</label>
+                        <div class="ui calendar">
+                                <span class="bi bi-calendar-check"></>
+                                <input name="start_date" placeholder="YYYY/MM/DD" type="text">
+                        </div>
+                </div>
+                <div class="field">
+                        <label>End Date</label>
+                        <div class="ui calendar">
+                                <span class="bi bi-calendar-check"></span>
+                                <input name="end_date" placeholder="YYYY/MM/DD" type="text">
+                        </div>
+                </div>
+                </div>
+            <button class="ui large primary button" type="submit" style="float: right;">
+                    Filter
+            </button>
+                <div style="clear: both"></div>
+        </form>
+    </div>
+        {% if data %}
+    <div class="ui segment">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        {% for col in head %}
+                            <th>{{ col }}</th>
+                        {% endfor %}
+                        <th class="right floating">Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for row in data %}
+                        <tr>
+                            {% for col in row[:-1] %}
+                                <td>{{ col }}</td>
+                            {% endfor %}
+                            {% if row[-1] %}
+                                <td class="right floating">
+                                    <form>
+                                        <button type="button" class="btn btn-primary" type="submit"
+                                                formaction="{{ row[-1] }}"
+                                                formmethod="post">
+                                            <i class="bi bi-cart-check"></i>
+                                            Buy
+                                        </button>
+                                    </form>
+                                </td>
+                            {% else %}
+                                <td class="right floating"></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+    </div>
+        {% endif %}
+        <div class="ui {% if not error %}hidden {% endif %}error message">
+            {% if error is defined and error is not string %}
+                <div class="header">{{ error[0] }}</div>
+                <ul class="list">
+                    {% for item in error[1:] %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="list">
+                    <li>{{ error }}</li>
+                </ul>
+            {% endif %}
+        </div>
+
+    </div>
+</main>
+{% endblock %}
+{% block script %}
+    <script src="../static/js/calDo.js"></script>
+    <script>
+        var content = [];
+        var httpRequest = new XMLHttpRequest();
+        httpRequest.open('POST', '{{ url_for('get_all_cities_and_airports') }}', true);
+        httpRequest.send();
+        httpRequest.onreadystatechange = function () {
+            if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+                var response = JSON.parse(httpRequest.responseText);
+                for (var i = 0; i < response.length; i++) {
+                    content.push({'title': response[i]});
+                }
+                $('.ui.search').search({source: content});
+            }
+        };
+    </script>
+{% endblock %}
+

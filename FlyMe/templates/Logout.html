@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="../static/image/icon.png" type="png"/>
+    <link href="../static/css/semantic.min.css" rel="stylesheet"/>
+    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../static/css/bootstrap-icons.css" rel="stylesheet">
+    <link href="../static/css/dashboard.css" rel="stylesheet">
+    <script src="../static/js/jquery.min.js"></script>
+    <script src="../static/js/semantic.min.js"></script>
+    <meta charset="UTF-8">
+    <title>Logout - FlyMe</title>
+</head>
+<body>
+<div class="ui grid center aligned middle aligned segment" style="height: 100%; margin: 0;">
+    <div class="column center aligned">
+        <div class="ui statistic">
+            <div class="value">
+                See You
+            </div>
+            <div class="label">You have successfully logged out.</div>
+        </div>
+        <div class="row"></div>
+        <a href="{{ url_for('home') }}" class="btn btn-primary">Go Home</a >
+        <a href="{{ url_for('login_customer') }}" class="btn btn-primary">Login Again</a >
+    </div>
+</div>
+</body>
+</html>

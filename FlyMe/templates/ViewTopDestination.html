@@ -1,0 +1,94 @@
+{% extends "GeneralTemplate.html" %}
+{% block title %}Top Destinations{% endblock %}
+{% block body %}
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+    <div class="ui container" style="padding-top: 8em;padding-bottom: 5%;">
+        <h2 class="ui header">
+            <i class="bi bi-award"></i>
+            <div class="content">
+                Top Destinations
+            </div>
+        </h2>
+        {% if month and year %}
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="two column row">
+                        <div class="column">
+                            <h2 class="ui header">
+                                <div class="content">
+                                    Last 3 Months
+                                </div>
+                            </h2>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <td>Rank</td>
+                                    <td>Destination</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>{{ month[0] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>{{ month[1] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>{{ month[2] }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="column">
+                            <h2 class="ui header">
+                                <div class="content">
+                                    Last Year
+                                </div>
+                            </h2>
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <td>Rank</td>
+                                    <td>Destination</td>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>{{ year[0] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>{{ year[1] }}</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>{{ year[2] }}</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        <div class="ui {% if not error %}hidden {% endif %}error message">
+            {% if error is defined and error is not string %}
+                <div class="header">{{ error[0] }}</div>
+                <ul class="list">
+                    {% for item in error[1:] %}
+                        <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <ul class="list">
+                    <li>{{ error }}</li>
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}
